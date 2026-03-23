@@ -31,7 +31,9 @@ body {
     align-items: center;
     min-height: 100vh;
     background-color: #fff;
-    font-family: Arial, sans-serif;
+    font-family: avenir, sans-serif;
+    flex-direction: column;
+    padding-bottom: 52px;
 }
 
 .game-wrapper {
@@ -43,8 +45,9 @@ body {
 
 .score-panel {
     display: flex;
-    justify-content: space-between;  /* Space between score and button */
+    justify-content: space-between;
     align-items: center;
+    gap: 16px;
     width: 800px;
     padding: 10px;
     background-color: #FFC907;
@@ -52,10 +55,31 @@ body {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+.game-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 .timer {
     flex: 0 1 auto;
     font-size: 24px;
     font-weight: bold;
+}
+
+.difficulty-label {
+    font-size: 18px;
+    font-weight: bold;
+    font-family: avenir, sans-serif;
+    color: #131313;
+}
+
+.difficulty-select {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    background-color: #fff;
 }
 
 #game-container {
@@ -112,6 +136,10 @@ body {
     background-color: #4FCB53;
 }
 
+.good-drop {
+    background-color: #2E9DF7;
+}
+
 .game-title {
     color: #131313;
     font-size: 48px;
@@ -125,6 +153,27 @@ body {
     font-size: 18px;
     margin-bottom: 20px;
     text-align: center;
+}
+
+.game-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px 14px;
+    background-color: #131313;
+    text-align: center;
+    z-index: 20;
+}
+
+.game-footer a {
+    color: #FFC907;
+    font-size: 12px;
+    word-break: break-all;
+}
+
+.game-footer a:hover {
+    color: #FFC907;
 }
 
 .hidden {
@@ -167,6 +216,14 @@ body {
     font-size: 19px;
     line-height: 1.4;
     color: #3c3c3c;
+    margin-bottom: 20px;
+}
+
+.next-round-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
     margin-bottom: 20px;
 }
 
@@ -222,6 +279,20 @@ body {
 @media (max-width: 850px) {
     .game-wrapper, .score-panel, #game-container {
         width: 95vw;
+    }
+
+    .score-panel {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .game-controls {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .next-round-controls {
+        flex-wrap: wrap;
     }
     
     #game-container {

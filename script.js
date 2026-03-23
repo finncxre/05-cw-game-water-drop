@@ -13,12 +13,22 @@ const resultModal = document.getElementById("result-modal");
 const resultMessage = document.getElementById("result-message");
 const playAgainButton = document.getElementById("play-again-btn");
 const confettiContainer = document.getElementById("confetti-container");
+const difficultySelect = document.getElementById("difficulty");
+const resultDifficultySelect = document.getElementById("result-difficulty");
+
+const difficultyPollutionChance = {
+  easy: 0,
+  medium: 0.5,
+  hard: 0.65,
+};
 
 const confettiColors = ["#FFC907", "#2E9DF7", "#4FCB53", "#FF902A", "#F5402C"];
+let audioContext;
 
 // Wait for button click to start the game
 startButton.addEventListener("click", startGame);
 playAgainButton.addEventListener("click", () => {
+  difficultySelect.value = resultDifficultySelect.value;
   hideModal();
   startGame();
 });
@@ -31,6 +41,7 @@ function startGame() {
 
   gameRunning = true;
   startButton.disabled = true;
+  difficultySelect.disabled = true;
 
   hideModal();
 
@@ -54,8 +65,11 @@ function createDrop() {
   const drop = document.createElement("div");
   drop.className = "water-drop";
 
-  // Split drops between good drops and pollution drops.
-  const isPollutionDrop = Math.random() < 0.5;
+  // Determine good/pollution split based on selected difficulty.
+  const selectedDifficulty = difficultySelect.value;
+  const pollutionChance =
+    difficultyPollutionChance[selectedDifficulty] ?? difficultyPollutionChance.medium;
+  const isPollutionDrop = Math.random() < pollutionChance;
   if (isPollutionDrop) {
     drop.classList.add("pollution-drop");
   } else {
@@ -85,6 +99,7 @@ function createDrop() {
 
     score += isPollutionDrop ? -1 : 2;
     scoreDisplay.textContent = score;
+    playPopSound();
     drop.remove();
   });
 
@@ -97,6 +112,7 @@ function createDrop() {
 function endGame() {
   gameRunning = false;
   startButton.disabled = false;
+  difficultySelect.disabled = false;
 
   clearInterval(dropMaker);
   clearInterval(timerInterval);
@@ -123,6 +139,8 @@ function removeAllDrops() {
 }
 
 function showResult() {
+  resultDifficultySelect.value = difficultySelect.value;
+
   const didWin = score > 20;
 
   if (didWin) {
@@ -160,4 +178,35 @@ function launchConfetti() {
 
 function clearConfetti() {
   confettiContainer.innerHTML = "";
+}
+
+function playPopSound() {
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) return;
+
+  if (!audioContext) {
+    audioContext = new AudioContextClass();
+  }
+
+  if (audioContext.state === "suspended") {
+    audioContext.resume();
+  }
+
+  const now = audioContext.currentTime;
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+
+  oscillator.type = "triangle";
+  oscillator.frequency.setValueAtTime(420, now);
+  oscillator.frequency.exponentialRampToValueAtTime(120, now + 0.08);
+
+  gainNode.gain.setValueAtTime(0.0001, now);
+  gainNode.gain.exponentialRampToValueAtTime(0.16, now + 0.01);
+  gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.09);
+
+  oscillator.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+
+  oscillator.start(now);
+  oscillator.stop(now + 0.1);
 }
